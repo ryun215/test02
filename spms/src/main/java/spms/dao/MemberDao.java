@@ -23,6 +23,26 @@ public class MemberDao {
 		
 	}
 	
+	//딜리트
+	public int delete(int no) throws Exception{
+		try{
+			
+		}catch(Exception e){
+			throw e;
+		}finally{
+			stmt = connection.createStatement();
+			stmt.executeUpdate(
+					"DELETE FROM MEMBERS WHERE MNO=" + 
+					no);
+			
+		}
+		return no;
+		
+	}
+	
+	
+	
+	
 	//인서트
 	public int insert(Member member) throws Exception{
 		

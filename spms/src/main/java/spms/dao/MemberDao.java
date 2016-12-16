@@ -23,6 +23,25 @@ public class MemberDao {
 		
 		
 	}
+	//update
+	public int update(Member member) throws Exception{
+		try{
+		pstmt = connection.prepareStatement(
+				"UPDATE MEMBERS SET EMAIL=?,MNAME=?,MOD_DATE=now()"
+				+ " WHERE MNO=?");
+		pstmt.setString(1, member.getEmail());
+		pstmt.setString(2, member.getName());
+		pstmt.setInt(3, member.getNo());
+		rowCount = pstmt.executeUpdate();
+		}catch(Exception e){
+			throw e;
+			
+		}finally{
+			try {if (pstmt != null) pstmt.close();} catch(Exception e) {}
+		}
+		return rowCount;
+	}
+	
 	
 	
 	
@@ -30,35 +49,29 @@ public class MemberDao {
 	public Member selectOne(int no) throws Exception{
 		
 		try{
-			String sql = "select MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE From MNO=?";
+			String sql = "select MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE From members where MNO=?";
 			pstmt = connection.prepareStatement(sql);
 			pstmt.setInt(1, no);
 			rs = pstmt.executeQuery();
-			while(rs.next()){
+			if(rs.next()){
 				member = new Member();
 				member.setName(rs.getString("MNAME"));
 				member.setNo(rs.getInt("MNO"));
 				member.setEmail(rs.getString("EMAIL"));
 				member.setPassword(rs.getString("PWD"));
-				
+				member.setCreatedDate(rs.getDate("CRE_DATE"));
+				member.setModifiedDate(rs.getDate("MOD_DATE"));
 			}
 		}catch(Exception e){
 			throw e;
 			
 		}finally{
-			if(rs !=null){
-				try{
-					rs.close();
-				}catch(Exception e){}
-			}
-			if(pstmt !=null){
-				try{
-					pstmt.close();
-				}catch(Exception e){}
-			}
+
+			try{if (rs!= null) rs.close();} catch(Exception e){}
+			try{if (pstmt!= null) pstmt.close();} catch(Exception e){}
+
 		}
 		return member;
-		
 	}
 	
 	
@@ -76,13 +89,8 @@ public class MemberDao {
 		}catch(Exception e){
 			throw e;
 		}finally{
-			if(stmt != null){
-				try{
-					stmt.close();
-				}catch(Exception e){
-					
-				}
-			}
+			
+			try{if (stmt!= null) stmt.close();} catch(Exception e){}
 			
 		}
 		return rowCount;

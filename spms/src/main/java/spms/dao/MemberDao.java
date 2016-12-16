@@ -15,6 +15,7 @@ public class MemberDao {
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	int rowCount;
+	Member member;
 	public void setConnection(Connection connection){
 		System.out.println("Ä¿³Ø¼Ç ¿¬°á");
 		this.connection = connection;
@@ -23,20 +24,68 @@ public class MemberDao {
 		
 	}
 	
+	
+	
+	//selectOne
+	public Member selectOne(int no) throws Exception{
+		
+		try{
+			String sql = "select MNO, EMAIL, PWD, MNAME, CRE_DATE, MOD_DATE From MNO=?";
+			pstmt = connection.prepareStatement(sql);
+			pstmt.setInt(1, no);
+			rs = pstmt.executeQuery();
+			while(rs.next()){
+				member = new Member();
+				member.setName(rs.getString("MNAME"));
+				member.setNo(rs.getInt("MNO"));
+				member.setEmail(rs.getString("EMAIL"));
+				member.setPassword(rs.getString("PWD"));
+				
+			}
+		}catch(Exception e){
+			throw e;
+			
+		}finally{
+			if(rs !=null){
+				try{
+					rs.close();
+				}catch(Exception e){}
+			}
+			if(pstmt !=null){
+				try{
+					pstmt.close();
+				}catch(Exception e){}
+			}
+		}
+		return member;
+		
+	}
+	
+	
+	
+	
+	
 	//µô¸®Æ®
 	public int delete(int no) throws Exception{
+		
 		try{
-			
+			stmt = connection.createStatement();
+			rowCount = stmt.executeUpdate(
+					"DELETE FROM MEMBERS WHERE MNO=" + 
+					no);
 		}catch(Exception e){
 			throw e;
 		}finally{
-			stmt = connection.createStatement();
-			stmt.executeUpdate(
-					"DELETE FROM MEMBERS WHERE MNO=" + 
-					no);
+			if(stmt != null){
+				try{
+					stmt.close();
+				}catch(Exception e){
+					
+				}
+			}
 			
 		}
-		return no;
+		return rowCount;
 		
 	}
 	
